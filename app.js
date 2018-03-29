@@ -14,8 +14,10 @@ var express    = require("express"),
 var commentRoutes = require("./routes/comments"),
     restaurantRoutes = require("./routes/restaurants"),
     indexRoutes = require("./routes/index");
-    
-mongoose.connect("mongodb://localhost/stevens_yelp");
+
+
+mongoose.connect("mongodb://yada:ftd2009@ds019836.mlab.com:19836/stevensyelp");
+//mongoose.connect("mongodb://localhost/stevens_yelp");
 app.use(bodyParser.urlencoded({extended: true}));
 app.set("view engine","ejs");
 app.use(express.static(__dirname + "/public"));
