@@ -1,0 +1,80 @@
+<% include ../partials/header %>
+    <div class="row">
+        <div class="col-md-3">
+            <h2>Location:</h2>
+            <div id="map"></div>
+        </div>
+        
+        <div class="col-md-9">
+            <div class="thumbnail">
+                <img class="img-responsive" src="<%= restaurant.image %>">
+                <div class="caption-full">
+                    <h4><a><%=restaurant.name%></a></h4>
+                    <p><%= restaurant.description %></p>
+                    <p> 
+                        <em>Submitted By <%= restaurant.author.username %></em>
+                    </p>
+                    <% if(currentUser && restaurant.author.id.equals(currentUser._id)){ %>
+                        <a class="btn btn-xs btn-warning" href="/restaurants/<%= restaurant._id %>/edit">Edit</a>
+                        <form id="delete-form" action="/restaurants/<%= restaurant._id %>?_method=DELETE" method="POST">
+                            <button class="btn btn-xs btn-danger">Delete</button>
+                        </form>
+                    <% }%>
+                </div>
+            </div>
+            <div class="well">
+                <div class="text-right">
+                    <a class="btn btn-success" href="/restaurants/<%= restaurant._id %>/comments/new">Add New Comment</a>
+                </div>
+                <hr>
+                <% restaurant.comments.forEach(function(comment){ %>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <strong><%= comment.author.username %></strong>
+                            
+                            <p>
+                                <%= comment.text %> 
+                            </p>
+                        <% if(currentUser && comment.author.id.equals(currentUser._id)){ %>
+                            <a class="btn btn-xs btn-warning" 
+                               href="/restaurants/<%=restaurant._id %>/comments/<%=comment._id %>/edit">Edit</a>
+                            <form id="delete-form" action="/restaurants/<%=restaurant._id %>/comments/<%=comment._id %>?_method=DELETE" method="POST">
+                                <input type="submit" class="btn btn-xs btn-danger" value="Delete">
+                            </form>
+                        <% } %>
+                        </div>
+                    </div>
+                <% }) %>
+            </div>
+        </div>
+    </div>
+<script>
+  function initMap() {
+    var lat = <%= restaurant.lat %>;
+    var lng = <%= restaurant.lng %>;
+    var center = {lat: lat, lng: lng };
+    var map = new google.maps.Map(document.getElementById('map'), {
+        zoom: 8,
+        center: center,
+        scrollwheel: false
+    });
+    var contentString = `
+      <strong><%= restaurant.name %><br />
+      <%= restaurant.location %></strong>
+      <p><%= restaurant.description %></p>
+    `
+    var infowindow = new google.maps.InfoWindow({
+      content: contentString
+    });
+    var marker = new google.maps.Marker({
+        position: center,
+        map: map
+    });
+    marker.addListener('click', function() {
+      infowindow.open(map, marker);
+    });
+  }
+</script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBk4u55etcK0F1YLvjDEg3Z3Myk19OmhXo&callback=initMap"></script>
+
+<% include ../partials/footer %>
